@@ -10,8 +10,22 @@ import com.facebook.react.ReactDelegate
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactRootView
 
-enum class RootComponent(val key: String) {
-    Main("main")
+// Sealed class allows built-in components AND custom components
+sealed class RootComponent(open val key: String) {
+
+    // Default included component (same as before)
+    data object Main : RootComponent("main")
+
+    // Allows app integrators to define their own components:
+    data class Custom(override val key: String) : RootComponent(key)
+
+    companion object {
+        // Optional helper if you want enum-like lookup
+        fun fromKey(key: String): RootComponent = when (key) {
+            Main.key -> Main
+            else -> Custom(key)
+        }
+    }
 }
 
 object ReactNativeViewFactory {
